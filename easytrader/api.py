@@ -1,14 +1,10 @@
 # coding=utf-8
 import logging
 
-from .gftrader import GFTrader
-from .joinquant_follower import JoinQuantFollower
-from .ricequant_follower import RiceQuantFollower
 from .log import log
-from .xq_follower import XueQiuFollower
-from .xqtrader import XueQiuTrader
+#from .xq_follower import XueQiuFollower
+#from .xqtrader import XueQiuTrader
 from .yhtrader import YHTrader
-from .xczqtrader import XCZQTrader
 
 
 def use(broker, debug=True, **kwargs):
@@ -28,15 +24,6 @@ def use(broker, debug=True, **kwargs):
         log.setLevel(logging.INFO)
     if broker.lower() in ['yh', '银河']:
         return YHTrader(debug=debug)
-    elif broker.lower() in ['xq', '雪球']:
-        return XueQiuTrader(**kwargs)
-    elif broker.lower() in ['gf', '广发']:
-        return GFTrader(debug=debug)
-    elif broker.lower() in ['yh_client', '银河客户端']:
-        from .yh_clienttrader import YHClientTrader
-        return YHClientTrader()
-    elif broker.lower() in ['xczq', '湘财证券']:
-        return XCZQTrader()
 
 
 def follower(platform, **kwargs):
@@ -55,9 +42,6 @@ def follower(platform, **kwargs):
         >>> jq.login(user='username', password='password')
         >>> jq.follow(users=user, strategies=['strategies_link'])
     """
-    if platform.lower() in ['rq', 'ricequant', '米筐']:
-        return RiceQuantFollower()
-    if platform.lower() in ['jq', 'joinquant', '聚宽']:
-        return JoinQuantFollower()
-    if platform.lower() in ['xq', 'xueqiu', '雪球']:
-        return XueQiuFollower(**kwargs)
+    pass
+#    if platform.lower() in ['xq', 'xueqiu', '雪球']:
+#        return XueQiuFollower(**kwargs)
