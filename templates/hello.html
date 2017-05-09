@@ -1,0 +1,159 @@
+<!doctype html>
+  <style>
+	.table-title{
+		background: #F5FFFA;
+	}
+	.double_row_bkcolor0{
+		background: #EAEAEA;
+	}
+	table{
+		border:1;
+		border-collapse:collapse;
+	}
+	table tr td{
+		text-align:right;
+	}
+	.font-red-bold{
+		color:red;
+		font-weight:bold;
+	}
+	.font-green-bold{
+		color:green;
+		font-weight:bold;
+	}
+	.font-bold{
+		font-weight:bold;
+	}
+	.font-red{
+		color:red;
+	}
+	.font-green{
+		color:green;
+	}
+	.font-blue{
+		color:blue;
+	}
+  </style>
+<title>Hello from Flask</title>
+
+<dd>
+<table border='1'>
+<tr>
+<th>交易市场</th>
+<th>卖出冻结</th>
+<th>市价</th>
+<th>市值</th>
+<th>成本价</th>
+<th>参考盈亏</th>
+<th>当前持仓</th>
+<th>盈亏比例</th>
+<th>股份余额</th>
+<th>股份可用</th>
+<th>代码</th>
+<th>名称</th>
+<th>卖出1/2</th>
+<!--<th>换仓1/2</th>-->
+</tr>
+{% for kk in position %}
+<tr>
+<td>{{kk['交易市场']}}</td>
+<td>{{kk['卖出冻结']}}</td>
+<td>{{kk['参考市价']}}</td>
+<td>{{kk['参考市值']}}</td>
+<td>{{kk['参考成本价']}}</td>
+<td>{{kk['参考盈亏']}}</td>
+<td>{{kk['当前持仓']}}</td>
+<td>{{kk['盈亏比例(%)']}}</td>
+<td>{{kk['股份余额']}}</td>
+<td>{{kk['股份可用']}}</td>
+<td>{{kk['证券代码']}}</td>
+<td>{{kk['证券名称']}}</td>
+<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>-->
+</tr>
+{% endfor %}
+</table>
+<br>
+<dd><input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />
+<input type='button' value='取得上市日期（低频）' onclick='getipoinfo();' />
+<div id='buy_info'></div>
+<div id='ipo_info'></div>
+<div id='stock_info_error'></div>
+<div id='stock_info'></div>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+getstockinfo();
+ref = setInterval(getstockinfo,14000);
+
+function getstockinfo () {
+	$.ajax({
+		type: "GET",
+		url: "/qq/",
+		//url: "/qq/" + stockno ,
+		//data: {'stockno':stockno},
+		//dataType: "text",
+		success: function(msg){
+                $('#stock_info').text("");
+                $('#stock_info_error').text("");
+                $('#stock_info').append(msg);
+		},
+		error:function(){
+                $('#stock_info_error').text("error");
+			return false;
+			},
+		});
+}
+
+//取得上市日期数据
+function getipoinfo(){
+	$.ajax({
+		type: "GET",
+		url: "/ipoinfo/",
+		success: function(msg){
+                $('ipo_info').text(msg);
+		},
+		error:function(){
+                $('ipo_info').text("error");
+				return false;
+			},
+		});
+}
+
+//buy
+function buy(stockno,num,price){
+	//alert($('#min').val());
+	$.ajax({
+		type: "POST",
+		url: "/buy/",
+		data: {stockno:stockno,num:num,price:price},
+		//dataType: "text",
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(){
+                $('#buy_info').text("buy error");
+				return false;
+			},
+		});
+}
+
+//sell
+function sell(stockno,num,price){
+	//alert($('#min').val());
+	$.ajax({
+		type: "POST",
+		url: "/sell/",
+		data: {stockno:stockno,num:num,price:price},
+		//dataType: "text",
+		success: function(msg){
+                $('#buy_info').text(msg);
+		},
+		error:function(){
+                $('#buy_info').text("sell error");
+				return false;
+			},
+		});
+}
+
+
+</script>
