@@ -1,10 +1,10 @@
 # coding: utf-8
-from .api import *
-from .webtrader import WebTrader
+#from .api import *
+#from .webtrader import WebTrader
 from .yhtrader import YHTrader
-from .gftrader import GFTrader
-from .joinquant_follower import JoinQuantFollower
-from .ricequant_follower import RiceQuantFollower
+#from .gftrader import GFTrader
+#from .joinquant_follower import JoinQuantFollower
+#from .ricequant_follower import RiceQuantFollower
 
 __version__ = '0.11.9'
 __author__ = 'shidenggui'
