@@ -171,15 +171,11 @@ def detect_gf_result(image_path):
 def detect_yh_result(image_path):
     """封装了tesseract的中文识别，部署在阿里云上，服务端源码地址为： https://github.com/shidenggui/yh_verify_code_docker"""
     api = 'http://123.56.157.162:5000/yh'
-    proxies = {
-        'http':'http://1:1@10.88.42.18:8080',
-        'https':'http://1:1@10.88.42.18:8080' 
-    }
     with open(image_path, 'rb') as f:
         try:
             rep = requests.post(api, files={
                 'image': f
-            },proxies=proxies)
+            })
             if rep.status_code != 200:
                 raise Exception('request {} error'.format(api))
         except Exception as e:

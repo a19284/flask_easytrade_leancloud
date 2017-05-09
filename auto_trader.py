@@ -80,7 +80,7 @@ def autoTrader(position_info,min_liutong,cha):
         result_sell = user.sell(code_position, '1000', amount=dic_position[code_position], entrust_prop='market') 
         time.sleep(1)
         result_buy = user.buy(min_liutong['code'], '1', amount=dic_position[code_position], entrust_prop='market') 
-        #print(result_sell,result_buy)
+        print(result_sell,result_buy)
         time.sleep(1)
         insertPosition(user.position)
         insertTradeHistory(position_info,min_liutong)
