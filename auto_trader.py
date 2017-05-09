@@ -42,7 +42,7 @@ def checkTradeTime(str_time):
         return True
         
     #闭市前几分钟无法看到五档行情，不做交易
-    if str_time >= '13:00' and str_time < '14:57':
+    if str_time >= '13:00' and str_time < '14:59':
         return True
     
     return False
@@ -51,7 +51,7 @@ def checkTradeTime(str_time):
 def autoTrader(position_info,min_liutong,cha):
     code_position = position_info['code']
     #满足差价(4%)才交易
-    if cha <= 3 :
+    if cha <= float(os.environ['cha']) :
         print ('cha %s' % cha)
         return
         
@@ -63,9 +63,9 @@ def autoTrader(position_info,min_liutong,cha):
         print('gufen_keyong = 0')
         return
     
-    if checkTradeTime(min_liutong['datetime'][1:6]) == False:
-        print('not trade time %s' % min_liutong['datetime'])
-        return
+#    if checkTradeTime(min_liutong['datetime'][1:6]) == False:
+#        print('not trade time %s' % min_liutong['datetime'])
+#        return
 
     try:
         dic_position = getPosition()
