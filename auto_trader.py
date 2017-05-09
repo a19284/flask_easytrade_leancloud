@@ -8,6 +8,7 @@ import sqlite3API
 import easytrader
 import time
 from send_mail import send_mail
+import os
 
 #法定假日判断
 def checkFadingJiari(str_time = str(datetime.datetime.now())[:10]):
