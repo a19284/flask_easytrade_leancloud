@@ -10,7 +10,7 @@ mail_postfix="139.com"  #发件箱的后缀
 mail_to = os.environ['mailto']
   
 def send_mail(sub,content,to_list=[mail_to]):  
-    me="hello"+"<"+mail_user+"@"+mail_postfix+">"  
+    me="cloud"  
     msg = MIMEText(content,_subtype='plain',_charset='gb2312')  
     msg['Subject'] = sub  
     msg['From'] = me  

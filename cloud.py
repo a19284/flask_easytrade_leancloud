@@ -83,3 +83,10 @@ def gettimeToMarket():
 @engine.define
 def sendmailtest():
     send_mail('测试','leancloud cloud测试')
+    
+@engine.define
+def getPositionFromYinhe():
+    data = auto_trader.insertPosition(auto_trader.getPositionFromYinhe())
+    send_mail('Position',str(data))
+
+    

@@ -63,9 +63,9 @@ def autoTrader(position_info,min_liutong,cha):
         print('gufen_keyong = 0')
         return
     
-#    if checkTradeTime(min_liutong['datetime'][1:6]) == False:
-#        print('not trade time %s' % min_liutong['datetime'])
-#        return
+    if checkTradeTime(min_liutong['datetime'][1:6]) == False:
+        print('not trade time %s' % min_liutong['datetime'])
+        return
 
     try:
         dic_position = getPosition()
@@ -85,7 +85,7 @@ def autoTrader(position_info,min_liutong,cha):
         insertPosition(user.position)
         insertTradeHistory(position_info,min_liutong)
         message_ok = 'sell %s buy %s amount %s' % (code_position,min_liutong['code'],dic_position[code_position])
-        send_mail('huancang OK',message_ok)
+        send_mail('huancang OK',message_ok + str(result_sell) + str(result_buy))
         print('*' * 50)        
         print('huancang OK!',message_ok)        
     except Exception as e:
@@ -190,6 +190,7 @@ def insertPosition(position):
     sqlite3API.save(conn,sql,data)
     print('insertPosition OK!')
     print (data)
+    return data
 
 #get 持仓信息 from sqlite
 def getPosition():
