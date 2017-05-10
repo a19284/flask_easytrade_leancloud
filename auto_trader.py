@@ -271,9 +271,6 @@ def get_ipo_info(user):
         result = user.buy(code,price,amount=amount)
     
 if __name__ == '__main__':
-    list1 = ['1','2']
-    list2 = ['3','4']
-    list3 =[]
-    list3.append(list1)
-    list3.append(lisi2)
-    print(list3)
+    dic = getPosition()
+    print(dic)
+    print(dic.keys())
