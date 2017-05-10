@@ -2,12 +2,19 @@
 
 from leancloud import Engine
 from leancloud import LeanEngineError
-#import requests
+import time
 from app import app
 import sqlite3API
 import auto_trader
 import easyquotation
 from send_mail import send_mail
+
+import pandas as pd
+from pandas.compat import StringIO
+try:
+    from urllib.request import urlopen, Request
+except ImportError:
+    from urllib2 import urlopen, Request
 
 engine = Engine(app)
 
@@ -81,12 +88,111 @@ def gettimeToMarket():
     return dic,stock_list
     
 @engine.define
-def sendmailtest():
-    send_mail('测试','leancloud cloud测试')
-    
-@engine.define
-def getPositionFromYinhe():
-    data = auto_trader.insertPosition(auto_trader.getPositionFromYinhe())
-    send_mail('Position',str(data))
+def getPositionAndBuyIPO():
+    try:
+        user = auto_trader.getUser()
+        #position
+        data = auto_trader.insertPosition(user.position)
+        time.sleep(2)
+        #getIpo
+        df_today_ipo, df_ipo_limit = user.get_ipo_info()
+        result_mail = ''
+        for i in range(len(df_today_ipo)):
+            code = df_today_ipo.ix[i]['代码']
+            price = df_today_ipo.ix[i]['价格']
+            amount = df_today_ipo.ix[i]['账户额度']
+            result = user.buy(code,price,amount=amount)
+            result_mail += '***<br>\r\n buy IPO:%s,%s,%s,%s' % (code,price,amount,str(result))
+        send_mail('Position and IPO',str(data) + result_mail)
+    except Exception as e :
+        print(str(e))
+        send_mail('[error] Position and IPO ',str(e))
 
+@engine.define
+def getAllStockInfo():
+    df = get_stock_basics()
+    conn = sqlite3API.get_conn('stock.db')
+    df.to_sql('stock_info',con=conn,flavor='sqlite', if_exists='replace')
     
+    #取得流通市值
+    getLiutong_from_qq()
+    
+#get_stock_basics
+def get_stock_basics():
+    """
+        获取沪深上市公司基本情况
+    Return
+    --------
+    DataFrame
+               code,代码
+               name,名称
+               industry,细分行业
+               area,地区
+               pe,市盈率
+               outstanding,流通股本
+               totals,总股本(万)
+               totalAssets,总资产(万)
+               liquidAssets,流动资产
+               fixedAssets,固定资产
+               reserved,公积金
+               reservedPerShare,每股公积金
+               eps,每股收益
+               bvps,每股净资
+               pb,市净率
+               timeToMarket,上市日期
+    """
+    ALL_STOCK_BASICS_FILE = 'http://218.244.146.57/static/all.csv'
+    request = Request(ALL_STOCK_BASICS_FILE)
+    text = urlopen(request, timeout=10).read()
+    text = text.decode('GBK')
+    text = text.replace('--', '')
+    df = pd.read_csv(StringIO(text), dtype={'code':'object'})
+    df = df.set_index('code')
+    return df
+
+def getCixinCode():
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select code from stock_info 
+        where substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-300 days') 
+        and substr(code,1,1) != '3' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid)
+    stock_list=[]
+    for info_temp in info_tid:
+        stock_list.append(info_temp[0])
+    
+    return stock_list     
+
+def getLiutong_from_qq():
+    q = easyquotation.use('qq')
+
+    #取上市300天内的股票
+    stock_list = getCixinCode()
+    stockinfo,stockinfo_zhangting = q.stocks(stock_list)
+    data = []
+    
+    for key,value in stockinfo.items():
+        try:
+            infoLiutong = (stockinfo[key]['code'],stockinfo[key]['流通市值'])
+            data.append(infoLiutong)
+
+        except Exception as e:
+            print(e)
+            
+    for key,value in stockinfo_zhangting.items():
+        try:
+            infoLiutong = (stockinfo_zhangting[key]['code'],stockinfo_zhangting[key]['流通市值'])
+            data.append(infoLiutong)
+
+        except Exception as e:
+            print(e)
+    #sql_truncat = 'truncat table liutong_from_qq'
+    sql = 'insert into liutong_from_qq values(?,?)'
+    conn = sqlite3API.get_conn('stock.db')
+    #sqlite3API.save(conn,sql_truncat,data)
+    sqlite3API.truncate(conn,'liutong_from_qq')
+
+    sqlite3API.save(conn,sql,data)
+    print('getLiutong_from_qq OK!')

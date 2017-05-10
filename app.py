@@ -16,26 +16,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello(name=None):
-    #user.position
-    position=\
-    [{'买入冻结': 0,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601398',
-      '证券名称': '工商银行'}]
-      
-#    user = getUser()
     
-    return render_template('hello.html', position=position)
+    return render_template('hello.html', position=auto_trader.getAllPositionFromSqlite())
 
 @app.route('/ipoinfo/')
 def getIpoInfo(stock='000001'):
@@ -49,7 +31,7 @@ def getIpoInfo(stock='000001'):
 #    except:
 #        return 'get ipo error'
 
-@app.route('/buy/',methods=['POST'])
+#@app.route('/buy/',methods=['POST'])
 def buy():
     try:
         num = request.form['num']
@@ -85,7 +67,7 @@ def dictToString(sample_dic):
         result_str.append("'%s':'%s'" % (key, value))
     return ','.join(result_str)
     
-@app.route('/sell/',methods=['POST'])
+#@app.route('/sell/',methods=['POST'])
 def sell():
     try:
         num = request.form['num']
@@ -111,7 +93,11 @@ def getHangqingFromQQ():
     q = easyquotation.use('qq')
 
     #取上市300天内的最小流通市值 top 40
-    dic,stock_list = gettimeToMarket()
+    dic,stock_list_300 = gettimeToMarket()
+    #持仓股取得
+    dic_position,stock_list_position = auto_trader.getPosition()
+    #获取对象
+    stock_list = list(set(stock_list_300)|set(stock_list_position))
 
     #取得最新行情 from qq
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
@@ -139,8 +125,8 @@ def getHangqingFromQQ():
             stockinfo[key]['ipo_date_num'] = ipo_date_num if ipo_date_num > 50 else str(ipo_date_num) + ' 天'
             stockinfo[key]['ipo_date_num_css'] = 'font-red-bold' if ipo_date_num <= 50 else ''
             #该股为持仓股时，判断是否需要调仓
-            if key in dic_position.keys():
-                auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
+#            if key in dic_position.keys():
+#                auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
         except:
             pass
 

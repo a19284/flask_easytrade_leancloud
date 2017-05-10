@@ -105,17 +105,19 @@ class WebTrader(object):
                 time.sleep(1)
 
     def check_login(self, sleepy=30):
-        log.setLevel(logging.ERROR)
-        try:
-            response = self.heartbeat()
-            self.check_account_live(response)
-        except Exception as e:
-            log.setLevel(self.log_level)
-            log.error('心跳线程发现账户出现错误: {}, 尝试重新登陆'.format(e))
-            self.autologin()
-        finally:
-            log.setLevel(self.log_level)
-        time.sleep(sleepy)
+        #不需要心跳线程 20170510
+        pass
+#        log.setLevel(logging.ERROR)
+#        try:
+#            response = self.heartbeat()
+#            self.check_account_live(response)
+#        except Exception as e:
+#            log.setLevel(self.log_level)
+#            log.error('心跳线程发现账户出现错误: {}, 尝试重新登陆'.format(e))
+#            self.autologin()
+#        finally:
+#            log.setLevel(self.log_level)
+#        time.sleep(sleepy)
 
     def heartbeat(self):
         return self.balance

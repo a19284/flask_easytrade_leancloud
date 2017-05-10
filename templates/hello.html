@@ -51,7 +51,7 @@
 <th>股份可用</th>
 <th>代码</th>
 <th>名称</th>
-<th>卖出1/2</th>
+<!--<th>卖出1/2</th>-->
 <!--<th>换仓1/2</th>-->
 </tr>
 {% for kk in position %}
@@ -68,14 +68,13 @@
 <td>{{kk['股份可用']}}</td>
 <td>{{kk['证券代码']}}</td>
 <td>{{kk['证券名称']}}</td>
-<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>-->
 <!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>-->
 </tr>
 {% endfor %}
 </table>
 <br>
-<dd><input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />
-<input type='button' value='取得上市日期（低频）' onclick='getipoinfo();' />
+<dd><!--<input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />-->
 <div id='buy_info'></div>
 <div id='ipo_info'></div>
 <div id='stock_info_error'></div>

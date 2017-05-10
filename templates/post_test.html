@@ -31,7 +31,6 @@
     <th>PE</th>
     <th>PB</th>
     <th>time</th>
-    <th>买入</th>
   </tr>
   {% set i = 0 %}
   {% set new_ipo_class = '' %}
@@ -56,12 +55,6 @@
         <td>{{value.PE}}</td>
         <td>{{value.PB}}</td>
         <td>{{value.datetime}}</td>
-        <td>
-  {% if i<=5 %}
-            <input type='button' id='btn1' value='buy 1手' onclick="buy('{{value.code}}',100,{{value.ask1}});">
-            <input type='button' id='btn1' value='buy 4手' onclick="buy('{{value.code}}',400,{{value.ask1}});">
-  {%endif%}
-        </td>
       </tr>
   {% else %}
     <li><em>Unbelievable.  No entries here so far</em>
