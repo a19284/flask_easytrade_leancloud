@@ -91,11 +91,9 @@ def gettimeToMarket():
 def getPositionAndBuyIPO():
     try:
         user = auto_trader.getUser()
-        print('position')
         #position
         data = auto_trader.insertPosition(user.position)
-        print('time.sleep(1)')
-        time.sleep(1)
+        time.sleep(2)
         #getIpo
         df_today_ipo,df_ipo_limit = user.get_ipo_info()
         result_mail = ''
@@ -104,7 +102,8 @@ def getPositionAndBuyIPO():
             price = df_today_ipo.ix[i]['价格']
             amount = df_today_ipo.ix[i]['账户额度']
             result = user.buy(code,price,amount=amount)
-            result_mail += '\r\n<br>*** buy IPO:%s,%s,%s,%s' % (code,price,amount,str(result))
+            result_mail += '\r\n[%s]buy IPO:%s,%s,%s,%s' % (str(i+1),code,price,amount,str(result))
+            time.sleep(2)
         send_mail('Position and IPO',str(data) + result_mail)
         print(str(data) + result_mail)
     except Exception as e :
