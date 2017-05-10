@@ -104,7 +104,7 @@ def getPositionAndBuyIPO():
             price = df_today_ipo.ix[i]['价格']
             amount = df_today_ipo.ix[i]['账户额度']
             result = user.buy(code,price,amount=amount)
-            result_mail += '***<br>\r\n buy IPO:%s,%s,%s,%s' % (code,price,amount,str(result))
+            result_mail += '\r\n<br>*** buy IPO:%s,%s,%s,%s' % (code,price,amount,str(result))
         send_mail('Position and IPO',str(data) + result_mail)
         print(str(data) + result_mail)
     except Exception as e :
@@ -199,3 +199,6 @@ def getLiutong_from_qq():
 
     sqlite3API.save(conn,sql,data)
     print('getLiutong_from_qq OK!')
+
+if __name__         == '__mian__':
+    getPositionAndBuyIPO()
