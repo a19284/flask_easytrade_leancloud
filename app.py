@@ -95,9 +95,9 @@ def getHangqingFromQQ():
     #取上市300天内的最小流通市值 top 40
     dic,stock_list_300 = gettimeToMarket()
     #持仓股取得
-    dic_position,stock_list_position = auto_trader.getPosition()
+    dic_position = auto_trader.getPosition()
     #获取对象
-    stock_list = list(set(stock_list_300)|set(stock_list_position))
+    stock_list = list(set(stock_list_300)|set(dic_position.keys()))
 
     #取得最新行情 from qq
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
@@ -107,9 +107,6 @@ def getHangqingFromQQ():
 
     #最小流通市值取得
     min_liutong = min(stockinfo.items(), key=lambda d:d[1]['流通市值'])[1]
-    
-    #get Position
-    dic_position = auto_trader.getPosition()
     #计算流通市值差
     for key,value in stockinfo.items():
         try:
