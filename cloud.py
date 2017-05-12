@@ -36,8 +36,31 @@ def getHangqingFromQQ():
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
 
     #按流通市值排序
-#    temp = sorted(stockinfo.items(), key=lambda d:d[1]['流通市值'])
+    temp = sorted(stockinfo.items(), key=lambda d:d[1]['流通市值'])
+    #非持仓 最小流通市值取得
+    min_liutong_trade = None
+    #print(temp)
+    for key,value in temp:
+        if checkExistsCode(key)==False:
+            min_liutong_trade = value
+            print('min_liutong_trade',min_liutong_trade['code'],min_liutong_trade['name'],min_liutong_trade['流通市值'])
+            break
+    
+    #get Position
+    dic_position = auto_trader.getPosition()
+    
+    max_chicang_liutong_trade = getMaxChicangLiutong(stockinfo,dic_position.keys())
+    print ('max_chicang_liutong_trade',max_chicang_liutong_trade['code'],max_chicang_liutong_trade['name'],max_chicang_liutong_trade['流通市值'])
 
+    #该股为持仓股时，判断是否需要调仓
+    if max_chicang_liutong_trade and min_liutong_trade:
+        max_liutong_sunhao = max_chicang_liutong_trade['流通市值']*max_chicang_liutong_trade['bid1']/max_chicang_liutong_trade['now']
+        min_liutong_sunhao = min_liutong_trade['流通市值']*min_liutong_trade['ask1']/min_liutong_trade['now']
+        max_min_cha_suohao = round((max_liutong_sunhao/min_liutong_sunhao - 1)*100,3)
+        #max_min_cha = str(round((max_chicang_liutong_trade['流通市值']/min_liutong_trade['流通市值'] - 1)*100,2)) + '%'
+    #    print(max_min_cha_suohao)
+        auto_trader.autoTrader(max_chicang_liutong_trade,min_liutong_trade,max_min_cha_suohao)
+'''
     #最小流通市值取得
     min_liutong = min(stockinfo.items(), key=lambda d:d[1]['流通市值'])[1]
     
@@ -62,7 +85,7 @@ def getHangqingFromQQ():
                 auto_trader.autoTrader(stockinfo[key],min_liutong,round((liutong_sunhao/min_liutong_sunhao - 1)*100,3))
         except Exception as e:
             print (e)
-        
+'''        
 #从本地sqlite取得上市日期
 def gettimeToMarket():
 
@@ -88,12 +111,21 @@ def gettimeToMarket():
     return dic,stock_list
     
 @engine.define
-def getPositionAndBuyIPO():
+def getPosition():
     try:
         user = auto_trader.getUser()
         #position
         data = auto_trader.insertPosition(user.position)
-        time.sleep(2)
+        send_mail('Position ',str(data))
+        print(str(data))
+    except Exception as e :
+        print(str(e))
+        send_mail('[error] Position ',str(e))
+
+@engine.define
+def buyIPO():
+    try:
+        user = auto_trader.getUser()
         #getIpo
         df_today_ipo,df_ipo_limit = user.get_ipo_info()
         result_mail = ''
@@ -104,11 +136,11 @@ def getPositionAndBuyIPO():
             result = user.buy(code,price,amount=amount)
             result_mail += '\r\n[%s]buy IPO:%s,%s,%s,%s' % (str(i+1),code,price,amount,str(result))
             time.sleep(2)
-        send_mail('Position and IPO',str(data) + result_mail)
-        print(str(data) + result_mail)
+        send_mail('buyIPO',result_mail)
+        print(result_mail)
     except Exception as e :
         print(str(e))
-        send_mail('[error] Position and IPO ',str(e))
+        send_mail('[error] buyIPO ',str(e))
 
 @engine.define
 def getAllStockInfo():
@@ -199,5 +231,46 @@ def getLiutong_from_qq():
     sqlite3API.save(conn,sql,data)
     print('getLiutong_from_qq OK!')
 
+
+#判断股票是否持仓
+def checkExistsCode(code):
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select code from chicang 
+        where code = '%s' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid % code)
+    if info_tid and len(info_tid)>0:
+        return True
+    else:
+        return False
+        
+#取得可用股份数
+def getKeyongGufen(code):
+    conn = sqlite3API.get_conn('stock.db')
+
+    sql_tid='''
+        select gufen_keyong from chicang 
+        where code = '%s' ;
+        '''
+    info_tid=sqlite3API.fetchmany(conn,sql_tid % code)
+    if info_tid and len(info_tid)>0:
+        return info_tid[0][0]
+    else:
+        return 0
+
+#取得持仓股中，流通市值最大的且可交易的股票
+def getMaxChicangLiutong(stockinfo,listCode):
+    dicMaxLiutong = dict()
+    liutong = 0.0
+    for code in listCode:
+        if getKeyongGufen(code)>0 and stockinfo[code]['流通市值']>liutong:
+            liutong = stockinfo[code]['流通市值']
+            dicMaxLiutong = stockinfo[code]
+    return dicMaxLiutong
+
+
 if __name__         == '__mian__':
-    getPositionAndBuyIPO()
+#    getHangqingFromQQ()
+    pass
