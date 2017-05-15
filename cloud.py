@@ -50,10 +50,11 @@ def getHangqingFromQQ():
     dic_position = auto_trader.getPosition()
     
     max_chicang_liutong_trade = getMaxChicangLiutong(stockinfo,dic_position.keys())
-    print ('max_chicang_liutong_trade',max_chicang_liutong_trade['code'],max_chicang_liutong_trade['name'],max_chicang_liutong_trade['流通市值'])
 
     #该股为持仓股时，判断是否需要调仓
     if max_chicang_liutong_trade and min_liutong_trade:
+        print ('max_chicang_liutong_trade',max_chicang_liutong_trade['code'],max_chicang_liutong_trade['name'],max_chicang_liutong_trade['流通市值'])
+        
         max_liutong_sunhao = max_chicang_liutong_trade['流通市值']*max_chicang_liutong_trade['bid1']/max_chicang_liutong_trade['now']
         min_liutong_sunhao = min_liutong_trade['流通市值']*min_liutong_trade['ask1']/min_liutong_trade['now']
         max_min_cha_suohao = round((max_liutong_sunhao/min_liutong_sunhao - 1)*100,3)
