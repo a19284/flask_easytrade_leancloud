@@ -103,6 +103,7 @@ function getstockinfo () {
 	var myDate = new Date();
 	if (checkTradeTime())
 	{
+		setTimeout(getstockinfo,50000);
 	}
 
 	$.ajax({
