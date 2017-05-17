@@ -82,9 +82,29 @@
 <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
 getstockinfo();
-ref = setInterval(getstockinfo,31000);
+//ref = setInterval(getstockinfo,31000);
+
+function checkTradeTime(){
+	var myDate = new Date();
+	//交易时间
+	arr = ['9','10','11','13','14'];
+	for (var k = 0, length = arr.length; k < length; k++)
+	{
+		if (myDate.getHours()==arr[k])
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 function getstockinfo () {
+
+	var myDate = new Date();
+	if (checkTradeTime())
+	{
+	}
+
 	$.ajax({
 		type: "GET",
 		url: "/qq/",
@@ -103,6 +123,7 @@ function getstockinfo () {
 		});
 }
 
+/*
 //取得上市日期数据
 function getipoinfo(){
 	$.ajax({
@@ -153,6 +174,6 @@ function sell(stockno,num,price){
 			},
 		});
 }
-
+*/
 
 </script>
