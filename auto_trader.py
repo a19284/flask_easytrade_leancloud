@@ -86,16 +86,21 @@ def autoTrader(position_info,min_liutong,cha):
             if item['证券代码'] == code_position and item['股份可用'] == 0:
                 print ('keyong_gufen == 0')
                 return
-        '''     
+        '''
+        amount = ((6500 /100) // min_liutong['now'])*100
+        if amount == 0:
+            amount = 100
+        print(amount)
+        
         result_sell = user.sell(code_position, '1000', amount=dic_position[code_position], entrust_prop='market') 
         time.sleep(1)
-        result_buy = user.buy(min_liutong['code'], '1', amount=dic_position[code_position], entrust_prop='market') 
+        result_buy = user.buy(min_liutong['code'], round(amount*min_liutong['now']*1.04,2), amount=amount) 
         print(result_sell,result_buy)
         time.sleep(1)
         insertPosition(user.position)
         insertTradeHistory(position_info,min_liutong)
         message_ok = 'sell %s buy %s amount %s' % (code_position,min_liutong['code'],dic_position[code_position])
-        send_mail('huancang OK',message_ok + str(result_sell) + str(result_buy))
+        send_mail('huancang OK',message_ok + '\r\n' + str(result_sell) + '\r\n' + str(result_buy))
         print('*' * 50)        
         print('huancang OK!',message_ok)        
     except Exception as e:

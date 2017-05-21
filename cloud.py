@@ -176,7 +176,8 @@ def get_stock_basics():
                pb,市净率
                timeToMarket,上市日期
     """
-    ALL_STOCK_BASICS_FILE = 'http://218.244.146.57/static/all.csv'
+#    ALL_STOCK_BASICS_FILE = 'http://218.244.146.57/static/all.csv'
+    ALL_STOCK_BASICS_FILE = 'http://file.tushare.org/tsdata/all.csv'
     request = Request(ALL_STOCK_BASICS_FILE)
     text = urlopen(request, timeout=10).read()
     text = text.decode('GBK')
