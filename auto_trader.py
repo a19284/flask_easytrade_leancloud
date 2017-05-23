@@ -94,7 +94,7 @@ def autoTrader(position_info,min_liutong,cha):
         
         result_sell = user.sell(code_position, '1000', amount=dic_position[code_position], entrust_prop='market') 
         time.sleep(1)
-        result_buy = user.buy(min_liutong['code'], round(amount*min_liutong['now']*1.04,2), amount=amount) 
+        result_buy = user.buy(min_liutong['code'], round(min_liutong['now']*1.05,2), amount=amount) 
         print(result_sell,result_buy)
         time.sleep(1)
         insertPosition(user.position)
