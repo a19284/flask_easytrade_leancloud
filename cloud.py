@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from leancloud import Engine
+from leancloud import Object
 from leancloud import LeanEngineError
 import time
 from app import app
@@ -98,7 +99,7 @@ def gettimeToMarket():
         where liutong_from_qq.liutong<13 and substr(liutong_from_qq.code,1,1) != '3' 
         and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-270 days')
         order by liutong_from_qq.liutong 
-        limit 40;
+        limit 50;
         '''
     #union all XXX 持仓股
         
@@ -137,8 +138,20 @@ def buyIPO():
             result = user.buy(code,price,amount=amount)
             result_mail += '\r\n[%s]buy IPO:%s,%s,%s,%s' % (str(i+1),code,price,amount,str(result))
             time.sleep(2)
-        send_mail('buyIPO',result_mail)
-        print(result_mail)
+            
+        if result_mail:
+            send_mail('buyIPO',result_mail)
+            print(result_mail)
+        else:
+            #none ipo
+            print('today none IPO!')
+            
+        #资金状况
+        saveBalanceLeanCloud(user.balance)
+        time.sleep(2)
+        #持仓
+        auto_trader.insertPosition(user.position)
+#        time.sleep(2)
     except Exception as e :
         print(str(e))
         send_mail('[error] buyIPO ',str(e))
@@ -272,7 +285,29 @@ def getMaxChicangLiutong(stockinfo,listCode):
             dicMaxLiutong = stockinfo[code]
     return dicMaxLiutong
 
+#持仓
+def savePositionLeanCloud(p):
+    Position = Object.extend('Position')
+    position = Position()
+    position.set('position',p)
+    position.save()
+    
+#账户资金状况
+def saveBalanceLeanCloud(b):
+    print('balance',b)
+    if b:
+        Balance = Object.extend('Balance')
+        balance = Balance()
+        balance.set('balance',b[0])
+        balance.save()
 
-if __name__         == '__mian__':
+#成交记录   
+def saveTradeHistoryLeanCloud(t):
+    TradeHistory = Object.extend('TradeHistory')
+    tradeHistory = TradeHistory()
+    tradeHistory.set('tradeHistory',t)
+    tradeHistory.save()
+    
+if __name__ == '__mian__':
 #    getHangqingFromQQ()
     pass

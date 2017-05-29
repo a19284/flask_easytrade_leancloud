@@ -9,6 +9,7 @@ import easytrader
 import time
 from send_mail import send_mail
 import os
+from leancloud import Object
 
 #法定假日判断
 def checkFadingJiari(str_time = str(datetime.datetime.now())[:10]):
@@ -97,12 +98,19 @@ def autoTrader(position_info,min_liutong,cha):
         result_buy = user.buy(min_liutong['code'], round(min_liutong['now']*1.05,2), amount=amount) 
         print(result_sell,result_buy)
         time.sleep(1)
+        #插入sqlite
         insertPosition(user.position)
         insertTradeHistory(position_info,min_liutong)
+        
         message_ok = 'sell %s buy %s amount %s' % (code_position,min_liutong['code'],dic_position[code_position])
         send_mail('huancang OK',message_ok + '\r\n' + str(result_sell) + '\r\n' + str(result_buy))
         print('*' * 50)        
-        print('huancang OK!',message_ok)        
+        print('huancang OK!',message_ok)   
+        
+        #插入leancloud的非关系型数据库
+        saveTradeHistoryLeanCloud(min_liutong,'B')
+        saveTradeHistoryLeanCloud(position_info,'S')
+
     except Exception as e:
         send_mail('error trade',str(e))
         print(e)
@@ -124,6 +132,14 @@ def insertTradeHistory(position_info,min_liutong):
     sqlite3API.save(conn,sql,data)
     print('insertTradeHistory OK!')
     print (data)
+    
+#成交记录   
+def saveTradeHistoryLeanCloud(t,flg='B'):
+    TradeHistory = Object.extend('TradeHistory')
+    tradeHistory = TradeHistory()
+    tradeHistory.set('tradeHistory',t)
+    tradeHistory.set('flg',flg)
+    tradeHistory.save()
 
 #备份交易时的行情快照
 def editStockInfo(stock_info,flg='B'):
