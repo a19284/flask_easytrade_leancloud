@@ -3,49 +3,34 @@ from flask import Flask
 from flask import request
 #import requests
 import easyquotation
+#import json 
+#import tushare as ts
 import datetime
 #import sqlite3 as lite
 import sqlite3API
+import easytrader
 import auto_trader
-import leanDBAccess 
+import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello(name=None):
-    b=[{'参考市值': 21642.0,
-      '可用资金': 28494.21,
-      '币种': '0',
-      '总资产': 50136.21,
-      '股份参考盈亏': -90.21,
-      '资金余额': 28494.21,
-      '资金帐号': 'xxx'}]
-    p=[{'买入冻结': 0,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601398',
-      '证券名称': '工商银行'}]
-    leanDBAccess.savePositionLeanCloud(p)
-    leanDBAccess.saveBalanceLeanCloud(b)
     
     return render_template('hello.html', position=auto_trader.getAllPositionFromSqlite())
 
-@app.route('/info/')
-def info():
-    b = leanDBAccess.getBalanceLeanCloud()
-    p = leanDBAccess.getTradeHistryLeanCloud()
-    print(b,p)
-    return b
-    
+@app.route('/ipoinfo/')
+def getIpoInfo(stock='000001'):
+    pass
+#    try:
+#        #上市日期取得
+#        df = (ts.get_stock_basics())
+#        cnx = lite.connect('stock.db')
+#        df.to_sql('stock_info',con=cnx,flavor='sqlite', if_exists='replace')
+#        return 'get ipo OK'
+#    except:
+#        return 'get ipo error'
+
 #@app.route('/buy/',methods=['POST'])
 def buy():
     try:
@@ -56,7 +41,7 @@ def buy():
         if len(stockno) != 6:
             return 'tockno error. stockno:' + stockno
         
-        user = auto_trader.getUser()
+        user = getUser()
         result=dict()
         
         result = user.buy(stockno, price, amount=num, entrust_prop='market')   
@@ -68,6 +53,13 @@ def buy():
     except Exception as e:
         print(e)
         return e
+        
+def getUser():
+    user = easytrader.use('yh')
+
+    user.prepare(user=os.environ['inputaccount'], password=os.environ['trdpwd'])
+    #user.prepare('yh.json')
+    return user
     
 def dictToString(sample_dic):
     result_str = []
@@ -85,7 +77,7 @@ def sell():
         if len(stockno) != 6:
             return 'tockno error. stockno:' + stockno
 
-        user = auto_trader.getUser()
+        user = getUser()
         result = user.sell(stockno, price, amount=num, entrust_prop='market')
         print(result)
         return dictToString(result)
@@ -157,7 +149,7 @@ def gettimeToMarket():
         where liutong_from_qq.liutong<13 and substr(liutong_from_qq.code,1,1) != '3' 
         and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-270 days')
         order by liutong_from_qq.liutong 
-        limit 50;
+        limit 40;
         '''
     #union all XXX 持仓股
         

@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from leancloud import Engine
+from leancloud import Object
 from leancloud import LeanEngineError
 import time
 from app import app
@@ -8,7 +9,6 @@ import sqlite3API
 import auto_trader
 import easyquotation
 from send_mail import send_mail
-import leanDBAccess 
 
 import pandas as pd
 from pandas.compat import StringIO
@@ -31,11 +31,7 @@ def getHangqingFromQQ():
     q = easyquotation.use('qq')
 
     #取上市300天内的最小流通市值 top 40
-    dic,stock_list_300 = gettimeToMarket()
-    #持仓股取得
-    dic_position = auto_trader.getPosition()
-    #获取对象
-    stock_list = list(set(stock_list_300)|set(dic_position.keys()))
+    dic,stock_list = gettimeToMarket()
 
     #取得最新行情 from qq
     stockinfo,stockinfo_zhangting = q.stocks(stock_list)
@@ -51,7 +47,9 @@ def getHangqingFromQQ():
             print('min_liutong_trade',min_liutong_trade['code'],min_liutong_trade['name'],min_liutong_trade['流通市值'])
             break
     
-    #取得最大持仓
+    #get Position
+    dic_position = auto_trader.getPosition()
+    
     max_chicang_liutong_trade = getMaxChicangLiutong(stockinfo,dic_position.keys())
 
     #该股为持仓股时，判断是否需要调仓
@@ -101,7 +99,7 @@ def gettimeToMarket():
         where liutong_from_qq.liutong<13 and substr(liutong_from_qq.code,1,1) != '3' 
         and substr(stock_info.timeToMarket,1,4) || '-' || substr(stock_info.timeToMarket,5,2) || '-' || substr(stock_info.timeToMarket,7,2) > date('now','-270 days')
         order by liutong_from_qq.liutong 
-        limit 40;
+        limit 50;
         '''
     #union all XXX 持仓股
         
@@ -149,7 +147,7 @@ def buyIPO():
             print('today none IPO!')
             
         #资金状况
-        leanDBAccess.saveBalanceLeanCloud(user.balance)
+        saveBalanceLeanCloud(user.balance)
         time.sleep(2)
         #持仓
         auto_trader.insertPosition(user.position)
@@ -287,6 +285,29 @@ def getMaxChicangLiutong(stockinfo,listCode):
             dicMaxLiutong = stockinfo[code]
     return dicMaxLiutong
 
+#持仓
+def savePositionLeanCloud(p):
+    Position = Object.extend('Position')
+    position = Position()
+    position.set('position',p)
+    position.save()
+    
+#账户资金状况
+def saveBalanceLeanCloud(b):
+    print('balance',b)
+    if b:
+        Balance = Object.extend('Balance')
+        balance = Balance()
+        balance.set('balance',b[0])
+        balance.save()
+
+#成交记录   
+def saveTradeHistoryLeanCloud(t):
+    TradeHistory = Object.extend('TradeHistory')
+    tradeHistory = TradeHistory()
+    tradeHistory.set('tradeHistory',t)
+    tradeHistory.save()
+    
 if __name__ == '__mian__':
 #    getHangqingFromQQ()
     pass
