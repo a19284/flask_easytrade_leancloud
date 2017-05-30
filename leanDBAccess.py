@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from leancloud import Object
+from leancloud import Query
 
 #持仓
 def savePositionLeanCloud(p):
@@ -28,7 +29,7 @@ def saveTradeHistoryLeanCloud(t,flg='B'):
 
 def getTradeHistryLeanCloud():    
     TradeHistory = Object.extend('TradeHistory')
-    tradeHistory = TradeHistory.query
+    tradeHistory = Query(TradeHistory)
     tradeHistory.select('flg','tradeHistory')
     query_list = tradeHistory.find()
     print (query_list)
@@ -36,7 +37,7 @@ def getTradeHistryLeanCloud():
 
 def getBalanceLeanCloud():    
     Balance = Object.extend('Balance')
-    balance = Balance.query
+    balance = Query(Balance)
     balance.select('balance')
     query_list = balance.find()
     print (query_list)

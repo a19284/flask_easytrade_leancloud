@@ -42,7 +42,7 @@ def hello(name=None):
 @app.route('/info/')
 def info():
     b = leanDBAccess.getBalanceLeanCloud()
-    p = leanDBAccess.getTradeHistryLeanCloud()
+    p = leanDBAccess.getPositionLeanCloud()
     print(b,p)
     return b
     
