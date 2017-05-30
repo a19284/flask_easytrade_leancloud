@@ -18,13 +18,6 @@ except ImportError:
     from urllib2 import urlopen, Request
 
 engine = Engine(app)
-
-@engine.define
-def hello(**params):
-    if 'name' in params:
-        return 'Hello, {}!'.format(params['name'])
-    else:
-        return 'Hello, LeanCloud!'
     
 @engine.define
 def getHangqingFromQQ():
