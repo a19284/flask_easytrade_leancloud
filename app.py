@@ -13,38 +13,42 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello(name=None):
-    b=[{'参考市值': 21642.0,
-      '可用资金': 28494.21,
-      '币种': '0',
-      '总资产': 50136.21,
-      '股份参考盈亏': -90.21,
-      '资金余额': 28494.21,
-      '资金帐号': 'xxx'}]
-    p=[{'买入冻结': 0,
-      '交易市场': '沪A',
-      '卖出冻结': '0',
-      '参考市价': 4.71,
-      '参考市值': 10362.0,
-      '参考成本价': 4.672,
-      '参考盈亏': 82.79,
-      '当前持仓': 2200,
-      '盈亏比例(%)': '0.81%',
-      '股东代码': 'xxx',
-      '股份余额': 2200,
-      '股份可用': 2200,
-      '证券代码': '601398',
-      '证券名称': '工商银行'}]
-    leanDBAccess.savePositionLeanCloud(p)
-    leanDBAccess.saveBalanceLeanCloud(b)
+#    b=[{'参考市值': 21642.0,
+#      '可用资金': 28494.21,
+#      '币种': '0',
+#      '总资产': 50136.21,
+#      '股份参考盈亏': -90.21,
+#      '资金余额': 28494.21,
+#      '资金帐号': 'xxx'}]
+#    p=[{'买入冻结': 0,
+#      '交易市场': '沪A',
+#      '卖出冻结': '0',
+#      '参考市价': 4.71,
+#      '参考市值': 10362.0,
+#      '参考成本价': 4.672,
+#      '参考盈亏': 82.79,
+#      '当前持仓': 2200,
+#      '盈亏比例(%)': '0.81%',
+#      '股东代码': 'xxx',
+#      '股份余额': 2200,
+#      '股份可用': 2200,
+#      '证券代码': '601398',
+#      '证券名称': '工商银行'}]
+#    leanDBAccess.savePositionLeanCloud(p)
+#    leanDBAccess.saveBalanceLeanCloud(b)
+#    
+#    t={'PB': 6.36, 'high_2': 37.02, 'bid3_volume': 2700, 'ask4_volume': 5100, 'code': '603991', 'bid5_volume': 500, 'ipo_date_num_css': 0, '损耗': '0.03%', 'bid1_num': 5.14, '涨跌(%)': '2.23%', '成交量(手)': 1073800, '价格/成交量(手)/成交额': '36.72/10738/39058147', 'bid1_num_css': '', 'bid2_volume': 2400, 'datetime': ' 15:10:57', 'cha_sunhao': 0, 'bid1_volume': 1400, 'low_2': 35.56, 'ask3': 36.75, 'ask1': 36.73, 'unknown': '', 'ask1_num_css': '', 'ask_volume': 499700.0, 'close': 35.94, 'PE': 73.11, 'ask4': 36.76, '跌停价': 32.35, '成交额': 3906.0, 'bid4_volume': 600, 'ask5_volume': 8500, 'bid5': 36.65, 'ipo_date_num': 0, 'sunhao_css': '', 'volume': 1073800.0, 'bid_volume': 574100, 'bid1': 36.72, 'low': 35.56, 'bid3': 36.7, '流通市值': 6.87, 'high': 37.02, '涨跌_css': 'font-red', 'ask1_volume': 1500, '涨跌': 0.8, '总市值': 27.38, 'turnover': 5.74, 'name': '至正股份', 'ask1_num': 5.51, 'ask2_volume': 1700, '振幅': 4.06, 'bid4': 36.66, '涨停价': 39.53, 'ask5': 36.77, 'cha': 0, '最近逐笔成交': '14:59:59/36.72/6/B/22030/32201|14:59:44/36.72/7/S/25710/32171|14:59:44/36.74/26/B/95517/32166|14:59:41/36.74/9/B/33066/32160|14:59:35/36.73/3/S/11019/32147|14:59:29/36.74/5/B/18370/32140', 'bid2': 36.71, 'ask2': 36.74, 'now': 36.74, 'ask3_volume': 100, 'open': 35.89}
+#    leanDBAccess.saveTradeHistoryLeanCloud(t)
+#    leanDBAccess.saveTradeHistoryLeanCloud(t,'S')
     
     return render_template('hello.html', position=auto_trader.getAllPositionFromSqlite())
 
 @app.route('/info/')
 def info():
     b = leanDBAccess.getBalanceLeanCloud()
-    p = leanDBAccess.getPositionLeanCloud()
-    print(b,p)
-    return b
+    t = leanDBAccess.getTradeHistoryLeanCloud()
+#    p = leanDBAccess.getPositionLeanCloud()
+    return render_template('info.html', balance=b,tradehistory=t)
     
 #@app.route('/buy/',methods=['POST'])
 def buy():
@@ -115,6 +119,7 @@ def getHangqingFromQQ():
 
     #最小流通市值取得
     min_liutong = min(stockinfo.items(), key=lambda d:d[1]['流通市值'])[1]
+#    print(min_liutong)
     #计算流通市值差
     for key,value in stockinfo.items():
         try:

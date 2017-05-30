@@ -12,7 +12,7 @@ def savePositionLeanCloud(p):
     
 #账户资金状况
 def saveBalanceLeanCloud(b):
-    print('balance',b)
+#    print('balance',b)
     if b:
         Balance = Object.extend('Balance')
         balance = Balance()
@@ -27,18 +27,37 @@ def saveTradeHistoryLeanCloud(t,flg='B'):
     tradeHistory.set('flg',flg)
     tradeHistory.save()
 
-def getTradeHistryLeanCloud():    
+def getTradeHistoryLeanCloud():    
     TradeHistory = Object.extend('TradeHistory')
     tradeHistory = Query(TradeHistory)
-    tradeHistory.select('flg','tradeHistory')
+#    tradeHistory.select('flg','tradeHistory')
     query_list = tradeHistory.find()
-    print (query_list)
-    return query_list
+    result=[]
+    for t in query_list:
+        temp = []
+        temp.append(t.get('flg'))
+        temp.append(t.get('tradeHistory'))
+        temp.append(t.get('createdAt'))
+        result.append(temp)
+#    print (query_list)
+    return result
 
 def getBalanceLeanCloud():    
     Balance = Object.extend('Balance')
     balance = Query(Balance)
     balance.select('balance')
     query_list = balance.find()
-    print (query_list)
+    result = []
+    for q in query_list:
+        dic = q.get('balance')
+        dic['time'] = q.get('createdAt')
+        result.append (dic)
+    return result
+    
+def getPositionLeanCloud():    
+    Position = Object.extend('Position')
+    position = Query(Position)
+    position.select('position')
+    query_list = position.find()
+#    print (str(query_list[0]))
     return query_list    

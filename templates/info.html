@@ -1,0 +1,105 @@
+<!doctype html>
+  <style>
+	.table-title{
+		background: #F5FFFA;
+	}
+	.double_row_bkcolor0{
+		background: #EAEAEA;
+	}
+	table{
+		border:1;
+		border-collapse:collapse;
+	}
+	table tr td{
+		text-align:right;
+	}
+	.font-red-bold{
+		color:red;
+		font-weight:bold;
+	}
+	.font-green-bold{
+		color:green;
+		font-weight:bold;
+	}
+	.font-bold{
+		font-weight:bold;
+	}
+	.font-red{
+		color:red;
+	}
+	.font-green{
+		color:green;
+	}
+	.font-blue{
+		color:blue;
+	}
+  </style>
+<title>Info</title>
+
+<dd>资金状况
+<table border='1'>
+<tr>
+<th>参考市值</th>
+<th>可用资金</th>
+<th>总资产</th>
+<th>股份参考盈亏</th>
+<th>资金余额</th>
+<th>time</th>
+<!--<th>卖出1/2</th>-->
+<!--<th>换仓1/2</th>-->
+</tr>
+{% for kk in balance %}
+<tr>
+<td>{{kk['参考市值']}}</td>
+<td>{{kk['可用资金']}}</td>
+<td>{{kk['总资产']}}</td>
+<td>{{kk['股份参考盈亏']}}</td>
+<td>{{kk['资金余额']}}</td>
+<td>{{kk['time']}}</td>
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>-->
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>-->
+</tr>
+{% endfor %}
+</table>
+<br>
+
+<dd>成交记录
+<table border='1'>
+<tr>
+<th>买卖</th>
+<th>code</th>
+<th>name</th>
+<th>now</th>
+<th>PE</th>
+<th>PB</th>
+<th>流通市值</th>
+<th>time</th>
+<!--<th>卖出1/2</th>-->
+<!--<th>换仓1/2</th>-->
+</tr>
+{% for kk in tradehistory %}
+<tr>
+<td>{{kk[0]}}</td>
+<td>{{kk[1]['code']}}</td>
+<td>{{kk[1]['name']}}</td>
+<td>{{kk[1]['now']}}</td>
+<td>{{kk[1]['PE']}}</td>
+<td>{{kk[1]['PB']}}</td>
+<td>{{kk[1]['流通市值']}}</td>
+<td>{{kk[2]}}</td>
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='卖出' onclick="sell('{{kk['证券代码']}}',{{kk['参考市价']}},{{kk['股份可用']}});" /></td>-->
+<!--<td><input type='button' id="btn_sell_{{kk['证券代码']}}" value='换仓1/2' onclick="huancang({{kk['证券代码']}},{{kk['参考市价']}});" /></td>-->
+</tr>
+{% endfor %}
+</table>
+
+<dd><!--<input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />-->
+<div id='buy_info'></div>
+<div id='ipo_info'></div>
+<div id='stock_info_error'></div>
+<div id='stock_info'></div>
+<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript">
+
+
+</script>

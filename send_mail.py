@@ -3,13 +3,14 @@ import os
 import smtplib  
 from email.mime.text import MIMEText  
 
-mail_host="smtp.139.com"  #设置服务器
-mail_user= os.environ['mailfrom']   #用户名
-mail_pass= os.environ['mailfrompassword']   #口令 
-mail_postfix="139.com"  #发件箱的后缀
-mail_to = os.environ['mailto']
-  
-def send_mail(sub,content,to_list=[mail_to]):  
+def send_mail(sub,content):  
+    mail_host="smtp.139.com"  #设置服务器
+    mail_user= os.environ['mailfrom']   #用户名
+    mail_pass= os.environ['mailfrompassword']   #口令 
+    mail_postfix="139.com"  #发件箱的后缀
+    mail_to = os.environ['mailto']
+    to_list=[mail_to]
+      
     me="cloud<%s>" % mail_user
     msg = MIMEText(content,_subtype='plain',_charset='gb2312')  
     msg['Subject'] = sub  
