@@ -8,6 +8,7 @@ import datetime
 import sqlite3API
 import auto_trader
 import leanDBAccess 
+from leancloud import cloudfunc
 
 app = Flask(__name__)
 
@@ -50,6 +51,16 @@ def info():
 #    p = leanDBAccess.getPositionLeanCloud()
     return render_template('info.html', balance=b,tradehistory=t)
     
+@app.route('/AllStockInfo/')
+def getAllStockInfo():
+    cloudfunc.rpc('getAllStockInfo')
+    return 'OK'
+    
+@app.route('/position/')
+def getPosition():
+    cloudfunc.rpc('getPosition')
+    return 'OK'
+
 #@app.route('/buy/',methods=['POST'])
 def buy():
     try:

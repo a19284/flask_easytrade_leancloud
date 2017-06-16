@@ -77,6 +77,7 @@
 </table>
 <br>
 <dd><!--<input type='button' value='取得最新行情（高频）' onclick='getstockinfo();' />-->
+<input type='button' value='获取沪深上市公司基本情况' onclick='getAllStockInfo();' />
 <div id='buy_info'></div>
 <div id='ipo_info'></div>
 <div id='stock_info_error'></div>
@@ -126,12 +127,14 @@ function getstockinfo () {
 		});
 }
 
-/*
-//取得上市日期数据
-function getipoinfo(){
+
+//获取沪深上市公司基本情况
+function getAllStockInfo(){
+	//alert($("#num").val());
 	$.ajax({
 		type: "GET",
-		url: "/ipoinfo/",
+		url: "/AllStockInfo/",
+		//data:{'num':$("#num").val()},
 		success: function(msg){
                 $('ipo_info').text(msg);
 		},
@@ -141,7 +144,7 @@ function getipoinfo(){
 			},
 		});
 }
-
+/*
 //buy
 function buy(stockno,num,price){
 	//alert($('#min').val());
